@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <stdbool.h>
 
 #ifndef FAT16PARSER_DISK_MANAGER_H
 #define FAT16PARSER_DISK_MANAGER_H

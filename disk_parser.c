@@ -143,7 +143,35 @@ BootSector *initialize_boot_sector_t(char boot_sector_bytes[512]) {
 
 int validate_boot_sector_t(BootSector *boot_sector) {
     if (!boot_sector) {
-        errno = EFAULT;
+        return 0;
+    }
+
+    int available_spcs[8] = {1, 2, 4, 8, 16, 32, 64, 128};
+    bool found_correct_spc = false;
+    for (int i = 0; i < 8; i++) {
+        if (available_spcs[i] == boot_sector->sectors_per_cluster) {
+            found_correct_spc = true;
+            break;
+        }
+    }
+
+    if (!found_correct_spc) {
+        return 0;
+    }
+
+    if (boot_sector->reserved_sectors <= 0) {
+        return 0;
+    }
+
+    if (boot_sector->fat_count != 1 && boot_sector->fat_count != 2) {
+        return 0;
+    }
+
+    if ((boot_sector->root_dir_capacity * DIR_ENTRY_SIZE) % boot_sector->bytes_per_sector != 0) {
+        return 0;
+    }
+
+    if (boot_sector->logical_sectors16 == 0 && boot_sector->logical_sectors32 == 0) {
         return 0;
     }
 
