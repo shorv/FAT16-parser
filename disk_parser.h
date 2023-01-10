@@ -56,20 +56,20 @@ typedef struct disk_t {
 
 Disk *disk_open_from_file(const char *volume_file_name);
 
-int disk_read(Disk *pdisk, int32_t first_sector, void *buffer, int32_t sectors_to_read);
+int disk_read(Disk *disk, int32_t first_sector, void *buffer, int32_t sectors_to_read);
 
-int disk_close(Disk *pdisk);
+int disk_close(Disk *disk);
 
-Volume *fat_open(Disk *pdisk, uint32_t first_sector);
+Volume *fat_open(Disk *disk, uint32_t first_sector);
 
-BootSector *initialize_boot_sector_t(char boot_sector_bytes[512]);
+BootSector *initialize_boot_sector_t(char boot_sector_buffer[512]);
 
 int validate_boot_sector_t(BootSector *boot_sector);
 
-Volume *initialize_volume(BootSector *boot_sector, Disk *pdisk);
+Volume *initialize_volume(BootSector *boot_sector, Disk *disk);
 
 uint64_t cluster_of_index(Volume *volume, unsigned int index);
 
-int fat_close(Volume *pvolume);
+int fat_close(Volume *volume);
 
 #endif //FAT16PARSER_DISK_MANAGER_H
