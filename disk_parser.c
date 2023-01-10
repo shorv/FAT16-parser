@@ -67,12 +67,12 @@ Volume *fat_open(Disk *disk, uint32_t first_sector) {
         return NULL;
     }
 
-    BootSector *boot_sector = initialize_boot_sector_t(boot_sector_buffer);
+    BootSector *boot_sector = initialize_boot_sector(boot_sector_buffer);
     if (!boot_sector) {
         return NULL;
     }
 
-    if (!validate_boot_sector_t(boot_sector)) {
+    if (!validate_boot_sector(boot_sector)) {
         errno = EINVAL;
         return NULL;
     }
@@ -85,7 +85,7 @@ Volume *fat_open(Disk *disk, uint32_t first_sector) {
     return volume;
 }
 
-BootSector *initialize_boot_sector_t(char boot_sector_buffer[512]) {
+BootSector *initialize_boot_sector(char boot_sector_buffer[512]) {
     BootSector *boot_sector = calloc(1, sizeof(BootSector));
     if (!boot_sector) {
         errno = ENOMEM;

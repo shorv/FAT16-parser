@@ -62,9 +62,9 @@ int disk_close(Disk *disk);
 
 Volume *fat_open(Disk *disk, uint32_t first_sector);
 
-BootSector *initialize_boot_sector_t(char boot_sector_buffer[512]);
+BootSector *initialize_boot_sector(char boot_sector_buffer[512]);
 
-int validate_boot_sector_t(BootSector *boot_sector);
+int validate_boot_sector(BootSector *boot_sector);
 
 Volume *initialize_volume(BootSector *boot_sector, Disk *disk);
 
