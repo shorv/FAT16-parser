@@ -6,7 +6,7 @@
 #ifndef FAT16PARSER_DISK_MANAGER_H
 #define FAT16PARSER_DISK_MANAGER_H
 
-struct boot_sector_t {
+typedef struct boot_sector_t {
     uint8_t jump_code[3];
     char oem_name[8];
     uint16_t bytes_per_sector;
@@ -29,9 +29,9 @@ struct boot_sector_t {
     char fsid[8];
     uint8_t boot_code[448];
     uint16_t magic;
-}__attribute__ (( packed ));
+}__attribute__ (( packed )) BootSector;
 
-struct volume_t {
+typedef struct volume_t {
     struct boot_sector_t *boot_sector;
 
     struct disk_t *disk;
@@ -44,11 +44,11 @@ struct volume_t {
     uint64_t first_data_sector;
     uint32_t bytes_per_cluster;
     uint32_t available_clusters;
-} __attribute__ (( packed ));
+} __attribute__ (( packed )) Volume;
 
-struct disk_t {
+typedef struct disk_t {
     FILE *file;
-};
+} Disk;
 
 struct disk_t *disk_open_from_file(const char *volume_file_name);
 
