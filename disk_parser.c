@@ -116,7 +116,7 @@ BootSector *initialize_boot_sector(char boot_sector_buffer[512]) {
     return boot_sector;
 }
 
-int validate_boot_sector_t(BootSector *boot_sector) {
+int validate_boot_sector(BootSector *boot_sector) {
     if (!boot_sector) {
         return 0;
     }
