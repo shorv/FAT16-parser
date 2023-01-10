@@ -23,9 +23,15 @@ Disk *disk_open_from_file(const char *volume_file_name) {
     return disk;
 }
 
-int disk_read(struct disk_t *pdisk, int32_t first_sector, void *buffer, int32_t sectors_to_read) {
-    if (!pdisk || first_sector < 0 || !buffer || sectors_to_read <= 0) {
+int disk_read(Disk *pdisk, int32_t first_sector, void *buffer, int32_t sectors_to_read) {
+    if (!pdisk || !pdisk->file || first_sector < 0 || !buffer || sectors_to_read <= 0) {
         errno = EFAULT;
+        return -1;
+    }
+
+    fseek(pdisk->file, first_sector * 512, SEEK_SET);
+    if (fread(buffer, 1, sectors_to_read * 512, pdisk->file) != (size_t) sectors_to_read * 512) {
+        errno = ERANGE;
         return -1;
     }
 
@@ -33,10 +39,13 @@ int disk_read(struct disk_t *pdisk, int32_t first_sector, void *buffer, int32_t 
 }
 
 int disk_close(struct disk_t *pdisk) {
-    if (!pdisk) {
+    if (!pdisk || !pdisk->file) {
         errno = EFAULT;
         return -1;
     }
+
+    fclose(pdisk->file);
+    free(pdisk);
 
     return 0;
 }
