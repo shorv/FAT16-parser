@@ -66,6 +66,8 @@ BootSector *initialize_boot_sector_t(char boot_sector_bytes[512]);
 
 int validate_boot_sector_t(BootSector *boot_sector);
 
+Volume *initialize_volume(BootSector *boot_sector, Disk *pdisk);
+
 uint64_t cluster_of_index(Volume *volume, unsigned int index);
 
 int fat_close(Volume *pvolume);

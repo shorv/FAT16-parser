@@ -77,35 +77,10 @@ Volume *fat_open(Disk *pdisk, uint32_t first_sector) {
         return NULL;
     }
 
-    Volume *volume = calloc(1, sizeof(Volume));
+    Volume *volume = initialize_volume(boot_sector, pdisk);
     if (!volume) {
-        errno = ENOMEM;
         return NULL;
     }
-
-    volume->disk = pdisk;
-    volume->boot_sector = boot_sector;
-    volume->first_fat_sector = boot_sector->reserved_sectors;
-    volume->first_root_dir_sector = volume->first_fat_sector + boot_sector->fat_count * boot_sector->sectors_per_fat;
-    volume->root_dir_sectors = ((boot_sector->root_dir_capacity * DIR_ENTRY_SIZE) / boot_sector->bytes_per_sector);
-
-    if ((boot_sector->root_dir_capacity * DIR_ENTRY_SIZE) % boot_sector->bytes_per_sector != 0) {
-        volume->root_dir_sectors++;
-    }
-
-    volume->first_data_sector = volume->first_root_dir_sector + volume->root_dir_sectors;
-
-    uint64_t volume_size =
-            boot_sector->logical_sectors16 == 0 ? boot_sector->logical_sectors32 : boot_sector->logical_sectors16;
-    uint64_t user_size =
-            volume_size - (boot_sector->fat_count * boot_sector->sectors_per_fat) - boot_sector->reserved_sectors -
-            volume->root_dir_sectors;
-    volume->available_clusters = user_size / boot_sector->sectors_per_cluster;
-
-    volume->fat_table = calloc(boot_sector->bytes_per_sector * boot_sector->sectors_per_fat, sizeof(uint16_t));
-    volume->bytes_per_cluster = boot_sector->sectors_per_cluster * boot_sector->bytes_per_sector;
-
-    disk_read(pdisk, volume->first_fat_sector, volume->fat_table, boot_sector->sectors_per_fat);
 
     return volume;
 }
@@ -176,6 +151,43 @@ int validate_boot_sector_t(BootSector *boot_sector) {
     }
 
     return 1;
+}
+
+Volume *initialize_volume(BootSector *boot_sector, Disk *pdisk) {
+    Volume *volume = calloc(1, sizeof(Volume));
+    if (!volume) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    volume->fat_table = calloc(boot_sector->bytes_per_sector * boot_sector->sectors_per_fat, sizeof(uint16_t));
+    if (!volume->fat_table) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    volume->disk = pdisk;
+    volume->boot_sector = boot_sector;
+    volume->first_fat_sector = boot_sector->reserved_sectors;
+    volume->first_root_dir_sector = volume->first_fat_sector + boot_sector->fat_count * boot_sector->sectors_per_fat;
+    volume->root_dir_sectors = ((boot_sector->root_dir_capacity * DIR_ENTRY_SIZE) / boot_sector->bytes_per_sector);
+
+    if ((boot_sector->root_dir_capacity * DIR_ENTRY_SIZE) % boot_sector->bytes_per_sector != 0) {
+        volume->root_dir_sectors++;
+    }
+
+    volume->first_data_sector = volume->first_root_dir_sector + volume->root_dir_sectors;
+    uint64_t volume_size =
+            boot_sector->logical_sectors16 == 0 ? boot_sector->logical_sectors32 : boot_sector->logical_sectors16;
+    uint64_t user_size =
+            volume_size - (boot_sector->fat_count * boot_sector->sectors_per_fat) - boot_sector->reserved_sectors -
+            volume->root_dir_sectors;
+    volume->available_clusters = user_size / boot_sector->sectors_per_cluster;
+
+    volume->bytes_per_cluster = boot_sector->sectors_per_cluster * boot_sector->bytes_per_sector;
+
+    disk_read(pdisk, volume->first_fat_sector, volume->fat_table, boot_sector->sectors_per_fat);
+    return volume;
 }
 
 uint64_t cluster_of_index(struct volume_t *volume, unsigned int index) {
