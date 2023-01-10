@@ -190,15 +190,19 @@ Volume *initialize_volume(BootSector *boot_sector, Disk *pdisk) {
     return volume;
 }
 
-uint64_t cluster_of_index(struct volume_t *volume, unsigned int index) {
+uint64_t cluster_of_index(Volume *volume, unsigned int index) {
     return volume->first_data_sector + (index - 2) * volume->boot_sector->sectors_per_cluster;
 }
 
-int fat_close(struct volume_t *pvolume) {
+int fat_close(Volume *pvolume) {
     if (!pvolume) {
         errno = EFAULT;
         return -1;
     }
+
+    free(pvolume->boot_sector);
+    free(pvolume->fat_table);
+    free(pvolume);
 
     return 0;
 }
