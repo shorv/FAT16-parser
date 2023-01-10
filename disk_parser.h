@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 
 #ifndef FAT16PARSER_DISK_MANAGER_H
 #define FAT16PARSER_DISK_MANAGER_H
+
+#define DIR_ENTRY_SIZE 32
 
 typedef struct boot_sector_t {
     uint8_t jump_code[3];
