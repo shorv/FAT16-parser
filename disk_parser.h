@@ -1,12 +1,12 @@
+#ifndef FAT16PARSER_DISK_MANAGER_H
+#define FAT16PARSER_DISK_MANAGER_H
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <stdbool.h>
-
-#ifndef FAT16PARSER_DISK_MANAGER_H
-#define FAT16PARSER_DISK_MANAGER_H
 
 #define DIR_ENTRY_SIZE 32
 
