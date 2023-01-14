@@ -3,4 +3,4 @@ project(fat16parser C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(fat16parser main.c disk_parser.c disk_parser.h file_parser.h)
+add_executable(fat16parser main.c disk_parser.c disk_parser.h file_parser.h file_parser.c)
